@@ -55,3 +55,54 @@ FROM
 	Sales.Orders;
 
 
+----Find the total Sales per CustomerID using aggregation (SUM() OVER()).
+ SELECT
+ 	Sales,
+	CustomerID,
+	SUM(Sales) OVER(PARTITION BY CustomerID) AS TotalSales,
+--Adding DESNE_RANK() Means you can see the RANK Of Orders without skipping ranks
+	DENSE_RANK() OVER(ORDER BY CustomerID) AS Rank
+FROM 
+   Sales.Orders
+
+   
+--Find the average Sales per SalesPersonID using AVG() OVER().
+SELECT
+	Sales,
+	SalesPersonID,
+	AVG(Sales) OVER(PARTITION BY SalesPersonID) AS AverageSales
+FROM
+  Sales.Orders;
+
+
+--Rank products based on total sales amount using RANK().
+SELECT
+   ProductID,
+   SUM(Sales) AS TotalSales,
+   RANK() OVER(ORDER BY SUM(Sales))AS RANK
+FROM
+   Sales.Orders
+   
+GROUP BY
+	ProductID;
+	
+--using CTE
+;WITH SalesTable AS(
+		SELECT
+		  ProductID,
+		  SUM(Sales) AS TotalSales
+	    FROM
+		   Sales.Orders
+		GROUP BY
+			ProductID
+)
+
+SELECT
+   ProductID,
+   RANK() OVER(ORDER BY TotalSales) AS SalesRank
+FROM
+	SalesTable
+ORDER BY
+      SalesRank;
+
+
