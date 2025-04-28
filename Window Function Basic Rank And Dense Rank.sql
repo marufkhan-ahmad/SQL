@@ -105,4 +105,77 @@ FROM
 ORDER BY
       SalesRank;
 
+--Calculate cumulative Sales using SUM() OVER (ORDER BY OrderDate).
+SELECT
+	OrderDate,
+	SUM(Sales) OVER(ORDER BY OrderDate) AS CumulativeSales
+FROM
+	Sales.Orders;
+	
+	
+--using cte
+;WITH SalesTable AS(
+	  SELECT
+	     OrderDate,
+		 SUM(Sales) OVER(ORDER BY OrderDate) AS CumulativeSales
+	  FROM
+	     Sales.Orders
+)
 
+SELECT
+	OrderDate,
+	DENSE_RANK() OVER(ORDER BY CumulativeSales) AS DenseRank
+FROM
+   SalesTable;
+
+
+--Calculate cumulative Quantity sold using SUM() OVER (ORDER BY ShipDate).
+SELECT
+	ShipDate,
+	SUM(Quantity) OVER(ORDER BY ShipDate) AS CumulativeQuantity
+FROM
+   Sales.Orders
+   
+   
+;WITH CumulativeTable AS(
+	  SELECT
+	     ShipDate,
+		 SUM(Quantity) AS CumulativeQuantity
+	  FROM
+	     Sales.Orders
+	  GROUP BY
+	        ShipDate
+)
+
+SELECT
+	ShipDate,
+	DENSE_RANK() OVER(ORDER BY CumulativeQuantity) AS DenseRank
+FROM
+   CumulativeTable;
+
+
+--Find the MAX() sales value per ProductID using window aggregation.
+SELECT
+   ProductID,
+   MAX(Sales) OVER(PARTITION BY ProductID) AS MaxmSales
+FROM
+	Sales.Orders
+	
+	
+--using cte
+;WITH MaxmSalesTable AS(
+			SELECT
+			   ProductID,
+			   MAX(Sales) AS MaximumSales
+			FROM
+			  Sales.Orders
+			GROUP BY
+				ProductID
+)
+
+SELECT
+	ProductID,
+	DENSE_RANK() OVER(ORDER BY MaximumSales DESC) AS DenseRank
+FROM
+   MaxmSalesTable;
+   
