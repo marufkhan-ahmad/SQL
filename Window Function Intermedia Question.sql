@@ -62,3 +62,6 @@ WHERE
     OrderRank = 1
 ORDER BY
     CustomerRank;
+
+--Har SalesPersonID ke liye:
+
