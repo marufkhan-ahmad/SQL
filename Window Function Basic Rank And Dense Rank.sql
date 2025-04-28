@@ -178,4 +178,28 @@ SELECT
 	DENSE_RANK() OVER(ORDER BY MaximumSales DESC) AS DenseRank
 FROM
    MaxmSalesTable;
+----Find the MIN() order quantity per CustomerID using window aggregation.
+SELECT
+    CustomerID,
+    MIN(Quantity) OVER (PARTITION BY CustomerID) AS MinmQuantity
+FROM
+    Sales.Orders;
+
+--USING CTE
+;WITH MinTable AS (
+		SELECT
+			CustomerID,
+			MIN(Quantity) AS minmquantity
+		FROM
+		  Sales.Orders
+		GROUP BY
+		      CustomerID
+)
+
+SELECT
+	CustomerID,
+	DENSE_RANK() OVER(ORDER BY minmquantity) AS DenseRank
+FROM
+	MinTable;
+
    
