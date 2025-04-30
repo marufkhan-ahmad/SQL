@@ -90,3 +90,131 @@ WHERE
    FirstSale <= 1
 ORDER BY
     CustomerRank;
+
+--Find the total number of orders placed by
+--each CustomerID using COUNT() OVER (PARTITION BY CustomerID).
+SELECT
+	OrderID,
+	CustomerID,
+	COUNT(OrderID) OVER(PARTITION BY CustomerID ) AS TotalOrders
+FROM
+	Sales.Orders;
+
+--Calculate running total sales across all orders sorted by OrderDate.
+SELECT
+	OrderID,
+	OrderDate,
+	Sales,
+	SUM(Sales) OVER(ORDER BY OrderDate) AS TotalSales
+FROM
+  Sales.Orders;
+
+--Rank SalesPersonID based on their total sales.
+WITH SalesTable AS(
+		SELECT
+			SalesPersonID,
+			SUM(Sales) AS TotalSales
+		FROM
+			Sales.Orders
+
+		GROUP BY
+			SalesPersonID
+)
+SELECT
+	SalesPersonID,
+	RANK() OVER(ORDER BY TotalSales DESC) AS TotalNumberSales
+FROM
+	SalesTable;
+
+--Rank customers based on their total quantity ordered.
+;WITH QuantityOrders AS(
+SELECT
+	CustomerID,
+	SUM(Quantity) AS TotalQuantity
+FROM
+   Sales.Orders
+GROUP BY
+	  CustomerID
+)
+SELECT
+	CustomerID,
+	DENSE_RANK() OVER(ORDER BY TotalQuantity DESC) AS TotalQuantityOrder
+FROM
+	QuantityOrders;
+
+--Calculate cumulative sales for each ProductID.
+
+			SELECT
+				ProductID,
+				OrderID,
+				OrderDate,
+				SUM(Sales) OVER(PARTITION BY ProductID ORDER BY OrderDate) AS CumulativeSales
+			FROM
+				Sales.Orders;
+
+--Find the maximum quantity ordered for each SalesPerson.
+SELECT
+	SalesPersonID,
+	Quantity,
+	MAX(Quantity) OVER(PARTITION BY SalesPersonID) AS MaxmQuantity
+FROM
+	Sales.Orders;
+
+--Find the minimum shipment duration per Customer.
+SELECT
+	CustomerID,
+	ShipDate,
+	MIN(ShipDate) OVER(PARTITION BY CustomerID) AS MinmShipment
+FROM
+   Sales.Orders;
+
+--Another Approach
+SELECT
+    CustomerID,
+    MIN(DATEDIFF(DAY, OrderDate, ShipDate)) AS MinShipmentDuration
+FROM
+    Sales.Orders
+GROUP BY
+    CustomerID;
+
+--Calculate the cumulative number of orders for each ShipAddress.
+SELECT
+	OrderID,
+	ShipAddress,
+	COUNT(OrderID) OVER(PARTITION BY ShipAddress ORDER BY OrderID) AS cumulativeOrders
+FROM
+	Sales.Orders;
+
+--Find the sum of sales for each OrderStatus using window function.
+SELECT
+	OrderStatus,
+	SUM(Sales) OVER(PARTITION BY OrderStatus) AS SumOfSales
+FROM
+   Sales.Orders;
+			
+--Find the cumulative sales growth for each Customer over time.
+SELECT
+	Sales,
+	CustomerID,
+	OrderDate,
+	SUM(Sales) OVER(PARTITION BY CustomerID ORDER BY OrderDate) AS Cumulative_sales_growth
+FROM
+  Sales.Orders;
+
+--Rank products by total sales amount and show ties (DENSE_RANK()).
+WITH SalesTable AS(
+		SELECT
+			ProductID,
+			SUM(Sales) AS TotalSales
+		FROM
+			Sales.Orders
+		GROUP BY
+			ProductID
+)
+SELECT
+	ProductID,
+	DENSE_RANK() OVER(ORDER BY TotalSales DESC) AS totalproductsales
+FROM
+  SalesTable;
+				
+
