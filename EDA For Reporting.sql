@@ -136,4 +136,79 @@ RunningTotal AS (
 SELECT * FROM RunningTotal;
 
 
+--Find the second highest sales order per CustomerID using RANK() or DENSE_RANK().
+WITH Highestsales AS(
+	  SELECT
+	     CustomerID,
+		 Sales,
+		 DENSE_RANK() OVER(PARTITION BY CustomerID ORDER BY Sales DESC) AS SecondHighestSales
+	  FROM
+	     Sales.Orders
+)
+SELECT 
+   CustomerID,
+   Sales
+FROM Highestsales
+WHERE SecondHighestSales = 2;
 
+--Identify the top 3 orders (based on Quantity) per ShipAddress using RANK().
+WITH TopOrders AS(
+		SELECT
+			Quantity,
+			ShipAddress,
+			RANK() OVER(PARTITION BY ShipAddress ORDER BY Quantity DESC) AS rn
+		FROM
+		   Sales.Orders
+)
+
+SELECT
+   Quantity,
+   ShipAddress
+   FROM
+     TopOrders
+  WHERE rn <= 3;
+
+--Rank all orders by Sales per ProductID and 
+--return only those with RANK() = 1 (i.e., top sale per product).
+WITH OrdersRanked AS(
+		SELECT
+			Sales,
+			ProductID,
+			RANK() OVER(PARTITION BY ProductID ORDER BY Sales DESC) AS rn
+		FROM
+		  Sales.Orders
+)
+
+   SELECT
+      Sales, ProductID
+   FROM
+     OrdersRanked
+   WHERE rn = 1;
+
+--For each SalesPersonID, calculate the running total of Sales ordered by OrderDate.
+WITH RunningTotal AS(
+		SELECT
+			SalesPersonID,
+			Sales,
+			OrderDate,
+			SUM(Sales) OVER(PARTITION BY SalesPersonID ORDER BY OrderDate DESC) AS RN
+      FROM 
+	    Sales.Orders
+)
+SELECT * FROM RunningTotal;
+
+--Calculate running average of sales for each customer across their orders sorted by OrderDate.
+WITH RunningAverage AS(
+		SELECT
+			Sales,
+			CustomerID,
+			OrderDate,
+			AVG(Sales) OVER(PARTITION BY CustomerID ORDER BY OrderDate) AS rn
+		FROM
+		   Sales.Orders
+)
+
+SELECT
+   *
+FROM
+   RunningAverage;
