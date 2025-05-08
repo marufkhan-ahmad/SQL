@@ -276,6 +276,39 @@ SELECT
 FROM
    Sales.Orders;
 
+--Use LEAD() to calculate how many days until the next shipment per SalesPersonID.
+SELECT
+	OrderDate,
+	ShipDate,
+	SalesPersonID,
+	LEAD(ShipDate) OVER(PARTITION BY SalesPersonID ORDER BY ShipDate) as prevshipdate,
+	DATEDIFF(DAY, ShipDate, LEAD(ShipDate) OVER(PARTITION BY SalesPersonID ORDER BY ShipDate)) AS Shipdate
+FROM
+  Sales.Orders;
+
+--Use FIRST_VALUE() to get the first OrderDate for each CustomerID.
+SELECT
+	OrderDate,
+	OrderID,
+	CustomerID,
+	FIRST_VALUE(OrderDate) OVER(PARTITION BY CustomerID ORDER BY OrderDate) AS FirstOrder
+FROM
+   Sales.Orders;
+
+--Use LAST_VALUE() to find the most recent ShipDate for each CustomerID.
+WITH LastValue AS(
+		SELECT
+			ShipDate,
+			CustomerID,
+			LAST_VALUE(ShipDate) OVER(PARTITION BY CustomerID ORDER BY ShipDate
+			ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+			) 
+			AS MostRecentShipDate
+		FROM
+		   Sales.Orders
+)
+   SELECT * FROM LastValue;
+
 
 				
 
