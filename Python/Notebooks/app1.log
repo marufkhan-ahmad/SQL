@@ -1,0 +1,16 @@
+2025-05-06 18:03:05 - DEBUG - Adding 10 + 15 = 25
+2025-05-06 18:03:05 - DEBUG - Subtracting 23 - 10 = 13
+2025-05-06 18:03:05 - DEBUG - Multiplying 12 * 30 = 360
+2025-05-06 18:03:05 - DEBUG - Dividing 4 / 2 = 2.0
+2025-05-06 18:04:06 - DEBUG - Adding 10 + 15 = result
+2025-05-06 18:04:06 - DEBUG - Subtracting 23 +- 10 = result
+2025-05-06 18:04:06 - DEBUG - Multiply 12 * 30 = result
+2025-05-06 18:04:06 - DEBUG - Divide 4 / 2 = result
+2025-05-06 18:04:51 - DEBUG - Adding 10 + 15 = 25
+2025-05-06 18:04:51 - DEBUG - Subtracting 23 +- 10 = 13
+2025-05-06 18:04:51 - DEBUG - Multiply 12 * 30 = 360
+2025-05-06 18:04:51 - DEBUG - Divide 4 / 2 = 2.0
+2025-05-07 22:44:38 - DEBUG - Adding 10 + 15 = 25
+2025-05-07 22:44:38 - DEBUG - Subtracting 23 +- 10 = 13
+2025-05-07 22:44:38 - DEBUG - Multiply 12 * 30 = 360
+2025-05-07 22:44:38 - DEBUG - Divide 4 / 2 = 2.0

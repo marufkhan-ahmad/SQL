@@ -216,5 +216,66 @@ SELECT
 	DENSE_RANK() OVER(ORDER BY TotalSales DESC) AS totalproductsales
 FROM
   SalesTable;
+
+-- LAG(), LEAD(), LAG(), FIRST_VALUE(), LAST_VALUE()
+
+--Use LAG() to find the difference in Sales between the current and previous order for each CustomerID.
+  SELECT 
+	OrderID,
+	CustomerID,
+	Sales,
+	Sales - LAG(Sales) OVER(PARTITION BY CustomerID ORDER BY OrderID) AS salesDifference
+FROM
+   Sales.Orders;
+
+--Using CTE
+WITH SalesDiff AS (
+		SELECT
+		   CustomerID,
+		   OrderID,
+		   Sales,
+		   Sales - LAG(Sales) OVER(PARTITION BY CustomerID ORDER BY OrderID) AS SalesDifference
+		FROM
+		  Sales.Orders
+	)
+
+	SELECT
+	   *
+	   FROM SalesDiff;
+
+--Use LEAD() to find the next ShipDate for each order placed by the same CustomerID.
+SELECT
+	ShipDate,
+	OrderID,
+	CustomerID,
+	LEAD(ShipDate) OVER(PARTITION BY CustomerID ORDER BY OrderID) AS NextShipDate
+FROM
+   Sales.Orders;
+
+--Detect if the OrderStatus has changed between consecutive orders for the same SalesPersonID using LAG().
+SELECT
+	OrderStatus,
+	OrderID,
+	SalesPersonID,
+	LAG(OrderStatus) OVER(PARTITION BY SalesPersonID ORDER BY OrderID) AS PerviousOrderStatus,
+	CASE
+		WHEN OrderStatus != LAG(OrderStatus) OVER(PARTITION BY SalesPersonID ORDER BY OrderID)
+        THEN 'Changed'
+		ELSE 'Same'
+		END AS StatusChanged
+FROM
+  Sales.Orders;
+
+--Use LAG() to find how many days passed since the last order per CustomerID (using OrderDate).
+SELECT
+	OrderDate,
+	CustomerID,
+	OrderID,
+	LAG(OrderDate) OVER(PARTITION BY CustomerID ORDER BY OrderDate) AS PrevOrderDate,
+	DATEDIFF(DAY, LAG(OrderDate) OVER(PARTITION BY CustomerID ORDER BY OrderDate), OrderDate) AS daypassed
+FROM
+   Sales.Orders;
+
+
 				
 
