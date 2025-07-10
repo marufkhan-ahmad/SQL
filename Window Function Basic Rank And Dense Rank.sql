@@ -45,7 +45,6 @@ ORDER BY
       Rank;
 
 --Find the RANK() of orders based on OrderDate (earlier orders rank first).
-
 SELECT
    OrderId,
    OrderDate,

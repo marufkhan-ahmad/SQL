@@ -309,6 +309,66 @@ WITH LastValue AS(
 )
    SELECT * FROM LastValue;
 
+--Compare each order’s quantity to the previous one for the same ProductID using LAG().
+SELECT
+  Quantity,
+  OrderID,
+  ProductID,
+  LAG(Quantity) OVER(PARTITION BY ProductID ORDER BY OrderDate) AS PreviousDate,
+  Quantity - LAG(Quantity) OVER(PARTITION BY ProductID ORDER BY OrderDate) AS QuantityChange
+FROM
+   Sales.Orders;
+
+--Detect if the BillAddress changed for a customer compared to the previous order using LAG().
+SELECT
+   BillAddress,
+   OrderID,
+   CustomerID,
+   OrderDate,
+   LAG(BillAddress) OVER(PARTITION BY CustomerID ORDER BY OrderDate) AS PreviousOrder,
+CASE 
+  WHEN BillAddress != LAG(BillAddress) OVER(PARTITION BY CustomerID ORDER BY OrderDate)
+  THEN 'Changed'
+  ELSE  'Same'
+  END AS Billaddresschanged
+
+FROM
+    Sales.Orders;
+
+--Use LEAD() to fetch the next Sales value per 
+--SalesPersonID and find customers whose next order had a drop in sales.
+SELECT
+   Sales,
+   SalesPersonID,
+   CustomerID,
+   OrderID,
+   OrderDate,
+   LEAD(Sales) OVER(PARTITION BY SalesPersonID ORDER BY OrderDate) AS NextSales,
+CASE 
+   WHEN Sales > LEAD(Sales) OVER(PARTITION BY SalesPersonID ORDER BY OrderDate)
+   THEN 'DropInSales'
+   ELSE 'NotDrop'
+   END AS NextSales
+FROM
+     Sales.Orders; 
+
+--Use LAG() to identify repeated ShipAddress usage for a customer (same as last one).
+SELECT
+    ShipAddress,
+	CustomerID,
+	OrderDate,
+	LAG(ShipAddress) OVER(PARTITION BY CustomerID ORDER BY OrderDate) AS RepeatedAddress,
+CASE
+  WHEN ShipAddress = LAG(ShipAddress) OVER(PARTITION BY CustomerID ORDER BY OrderDate)
+  THEN 'Repeated'
+  ELSE 'Changes'
+  END AS
+		ShipAddresStatus
+FROM
+	Sales.Orders;
+
+
+
 
 				
 
